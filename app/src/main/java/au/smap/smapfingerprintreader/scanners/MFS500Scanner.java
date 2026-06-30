@@ -91,6 +91,11 @@ public class MFS500Scanner extends Scanner implements MorfinAuth_Callback {
                         app.setLogs("Got image from reader: " + Size, false);
 
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bImage, 0, bImage.length);
+                        if (bitmap == null) {
+                            app.setLogs("Could not decode fingerprint image", true);
+                            app.model.getScannerState().postValue(ScannerViewModel.ERROR);
+                            return;
+                        }
                         Uri uri = FileUtilities.getUri(context, app, bitmap);
                         app.model.getImage().postValue(uri);
 

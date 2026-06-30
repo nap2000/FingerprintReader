@@ -12,6 +12,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.preference.PreferenceManager;
@@ -34,10 +38,18 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
 
         app = FingerprintReader.getInstance();
 
         setContentView(R.layout.activity_scan);
+
+        // Android 15 (targetSdk 35) enforces edge-to-edge: pad the root for system bars
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.scan_root), (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return insets;
+        });
         app.connectProgressBar = (LinearLayout) findViewById(R.id.connect_progress_bar);
         app.captureProgressBar = (LinearLayout) findViewById(R.id.capture_progress_bar);
         app.captureButton = (MaterialButton) findViewById(R.id.capture_button);
